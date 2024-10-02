@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Webcam with Random Glasses</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Edu+AU+VIC+WA+NT+Dots:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #container {
+            margin: 0px auto;
+            width: 800px;
+            height: 550px;
+            border: 10px black solid;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #videoElement {
+            width: 800px;
+            height: 550px;
+            background-color: #666;
+        }
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        h1{font-family: "Edu AU VIC WA NT Dots", cursive; font-size: 5.5rem; margin: 0;  position: absolute;
+            top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Today <span id="luckyColor">Lucky Color</span> Glasses</h1>
+    <div id="container">
+        <video autoplay="true" id="videoElement"></video>
+        <canvas id="glassesCanvas"></canvas>
+    </div>
+    <script>
+        var video = document.querySelector("#videoElement");
+        var canvas = document.getElementById('glassesCanvas');
+        var ctx = canvas.getContext('2d');
+
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function (stream) {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function (err0r) {
+                console.log("Something went wrong!");
+            });
+        }
+
+       
+        function getRandomColor() {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+  
+        function drawGlasses() {
+            const color = getRandomColor(); 
+            ctx.clearRect(0, 0, canvas.width, canvas.height); 
+            
+            const centerX = (canvas.width / 2) + 90; 
+            const centerY = canvas.height / 2;
+            const radiusX = 60; 
+            const radiusY = 30; 
+            const gap = 20; 
+
+            ctx.lineWidth = 5;
+            ctx.strokeStyle = color;
+
+            
+            ctx.beginPath();
+            ctx.ellipse(centerX - radiusX - gap, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+
+           
+            ctx.beginPath();
+            ctx.ellipse(centerX + radiusX + gap, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX - radiusX - gap + 60, centerY);
+            ctx.lineTo(centerX + radiusX + gap - 60, centerY);
+            ctx.stroke();
+        }
+
+        
+        video.addEventListener('loadedmetadata', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+             drawGlasses();
+
+           
+        });
+    </script>
+</body>
+</html>
+
